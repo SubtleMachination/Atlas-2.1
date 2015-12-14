@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2A201A2D1C1F1E500078421A /* TileViewRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A201A2C1C1F1E500078421A /* TileViewRegistry.swift */; };
 		2A60D58F1C1B7E9C005E9455 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A60D58C1C1B7E9C005E9455 /* AppDelegate.swift */; };
 		2A60D5901C1B7E9C005E9455 /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 2A60D58D1C1B7E9C005E9455 /* GameScene.sks */; };
 		2A60D5931C1B7F86005E9455 /* AtlasScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A60D5921C1B7F86005E9455 /* AtlasScene.swift */; };
@@ -22,7 +23,9 @@
 		2A60D5AD1C1B8355005E9455 /* SKSpriteNodeUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A60D5A51C1B8355005E9455 /* SKSpriteNodeUtility.swift */; };
 		2A60D5AE1C1B8355005E9455 /* UserDefaultsUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A60D5A61C1B8355005E9455 /* UserDefaultsUtility.swift */; };
 		2A60D5B01C1B89BE005E9455 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A60D5AF1C1B89BE005E9455 /* MapView.swift */; };
-		2AABF4A11C1CBE81005F7C53 /* Coordinate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AABF4A01C1CBE81005F7C53 /* Coordinate.swift */; };
+		2A80AE601C1CF3B600699DC9 /* TileMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A80AE5F1C1CF3B600699DC9 /* TileMap.swift */; };
+		2A80AE621C1CFB4100699DC9 /* TextureUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A80AE611C1CFB4100699DC9 /* TextureUtility.swift */; };
+		2AABF4A11C1CBE81005F7C53 /* CoordinateUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AABF4A01C1CBE81005F7C53 /* CoordinateUtility.swift */; };
 		2AABF4A41C1CD112005F7C53 /* square.png in Resources */ = {isa = PBXBuildFile; fileRef = 2AABF4A31C1CD112005F7C53 /* square.png */; };
 		2ACEC7661C1B52BB00A6C976 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2ACEC7641C1B52BB00A6C976 /* Main.storyboard */; };
 		2ACEC7681C1B52BB00A6C976 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2ACEC7671C1B52BB00A6C976 /* Assets.xcassets */; };
@@ -41,6 +44,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2A201A2C1C1F1E500078421A /* TileViewRegistry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TileViewRegistry.swift; sourceTree = "<group>"; };
 		2A60D58C1C1B7E9C005E9455 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = Boilerplate/AppDelegate.swift; sourceTree = "<group>"; };
 		2A60D58D1C1B7E9C005E9455 /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; name = GameScene.sks; path = Boilerplate/GameScene.sks; sourceTree = "<group>"; };
 		2A60D5921C1B7F86005E9455 /* AtlasScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AtlasScene.swift; path = Code/Scenes/AtlasScene.swift; sourceTree = "<group>"; };
@@ -56,7 +60,9 @@
 		2A60D5A51C1B8355005E9455 /* SKSpriteNodeUtility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SKSpriteNodeUtility.swift; path = Code/Utility/SKSpriteNodeUtility.swift; sourceTree = "<group>"; };
 		2A60D5A61C1B8355005E9455 /* UserDefaultsUtility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UserDefaultsUtility.swift; path = Code/Utility/UserDefaultsUtility.swift; sourceTree = "<group>"; };
 		2A60D5AF1C1B89BE005E9455 /* MapView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
-		2AABF4A01C1CBE81005F7C53 /* Coordinate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Coordinate.swift; sourceTree = "<group>"; };
+		2A80AE5F1C1CF3B600699DC9 /* TileMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TileMap.swift; sourceTree = "<group>"; };
+		2A80AE611C1CFB4100699DC9 /* TextureUtility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextureUtility.swift; sourceTree = "<group>"; };
+		2AABF4A01C1CBE81005F7C53 /* CoordinateUtility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoordinateUtility.swift; sourceTree = "<group>"; };
 		2AABF4A31C1CD112005F7C53 /* square.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = square.png; path = Resources/Common/square.png; sourceTree = "<group>"; };
 		2ACEC7591C1B52BB00A6C976 /* Atlas 2.1.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Atlas 2.1.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2ACEC7651C1B52BB00A6C976 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -90,7 +96,10 @@
 			children = (
 				2A60D5921C1B7F86005E9455 /* AtlasScene.swift */,
 				2A60D5AF1C1B89BE005E9455 /* MapView.swift */,
-				2AABF4A01C1CBE81005F7C53 /* Coordinate.swift */,
+				2A201A2C1C1F1E500078421A /* TileViewRegistry.swift */,
+				2A80AE5F1C1CF3B600699DC9 /* TileMap.swift */,
+				2AABF4A01C1CBE81005F7C53 /* CoordinateUtility.swift */,
+				2A80AE611C1CFB4100699DC9 /* TextureUtility.swift */,
 			);
 			name = Generation;
 			sourceTree = "<group>";
@@ -295,16 +304,19 @@
 				2A60D5A71C1B8355005E9455 /* ACEaseUtility.swift in Sources */,
 				2A60D5B01C1B89BE005E9455 /* MapView.swift in Sources */,
 				2A60D5A81C1B8355005E9455 /* AngleUtility.swift in Sources */,
+				2A201A2D1C1F1E500078421A /* TileViewRegistry.swift in Sources */,
 				2A60D5AB1C1B8355005E9455 /* IntUtility.swift in Sources */,
 				2A60D5AD1C1B8355005E9455 /* SKSpriteNodeUtility.swift in Sources */,
 				2A60D5AA1C1B8355005E9455 /* DeviceUtility.swift in Sources */,
 				2A60D5A91C1B8355005E9455 /* ColorUtility.swift in Sources */,
 				2A60D5951C1B7F89005E9455 /* GameViewController.swift in Sources */,
 				2A60D58F1C1B7E9C005E9455 /* AppDelegate.swift in Sources */,
-				2AABF4A11C1CBE81005F7C53 /* Coordinate.swift in Sources */,
+				2AABF4A11C1CBE81005F7C53 /* CoordinateUtility.swift in Sources */,
+				2A80AE601C1CF3B600699DC9 /* TileMap.swift in Sources */,
 				2A60D5931C1B7F86005E9455 /* AtlasScene.swift in Sources */,
 				2A60D5AC1C1B8355005E9455 /* RandomUtility.swift in Sources */,
 				2A60D5AE1C1B8355005E9455 /* UserDefaultsUtility.swift in Sources */,
+				2A80AE621C1CFB4100699DC9 /* TextureUtility.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -435,6 +447,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "runemark.Atlas-2-1";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -446,6 +459,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "runemark.Atlas-2-1";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};

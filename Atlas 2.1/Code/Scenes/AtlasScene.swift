@@ -6,9 +6,20 @@
 //  Copyright (c) 2015 Runemark. All rights reserved.
 //
 
+import UIKit
 import SpriteKit
 
-class AtlasScene:SKScene
+protocol PanHandler
+{
+    func pan(delta:CGPoint)
+}
+
+protocol PinchHandler
+{
+    func pinch(delta:CGFloat)
+}
+
+class AtlasScene:SKScene,PanHandler,PinchHandler
 {
     //////////////////////////////////////////////////////////////////////////////////////////
     // View
@@ -19,6 +30,7 @@ class AtlasScene:SKScene
     var tiles:SKTextureAtlas
     
     var mapView:MapView
+    var map:TileMap
 
     override init(size:CGSize)
     {
@@ -30,12 +42,19 @@ class AtlasScene:SKScene
         
         tiles = SKTextureAtlas(named:"Tiles")
         
-        let tileSize = CGSizeMake(10, 10)
-        let mapViewSize = CGSizeMake(300, 300)
+        let tileSize = CGSizeMake(20, 20)
+        let mapViewSize = CGSizeMake(250, 250)
+        
+        let mapBounds = TileRect(left:0, right:50, up:50, down:0)
+        map = TileMap(bounds:mapBounds, random:true)
+        
         mapView = MapView(viewSize:mapViewSize, tileSize:tileSize)
+        map.registerObserver(mapView)
         mapView.position = center
         
         super.init(size:size)
+        
+        self.backgroundColor = UIColor(red:0.1, green:0.1, blue:0.1, alpha:1.0)
         
         self.addChild(mapView)
     }
@@ -50,7 +69,44 @@ class AtlasScene:SKScene
         
     }
     
-    override func update(currentTime: CFTimeInterval) {
-        /* Called before each frame is rendered */
+    override func update(currentTime: CFTimeInterval)
+    {
+        let randomCoord = map.randomCoord()
+        let randomType = TileClasses.all.randomElement()
+        
+        map.setTileAt(randomCoord, type:randomType)
+        
+//        mapView.update()
+    }
+    
+    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?)
+    {
+//        if let firstTouch = touches.first
+//        {
+//            let screenLocation = firstTouch.locationInNode(mapView)
+//            let tileLocation = tileCoordForScreenPos(screenLocation, cameraInWorld:mapView.cameraInWorld, cameraOnScreen:mapView.cameraOnScreen, tileSize:mapView.tileSize)
+//            let discreteTileLocation = tileLocation.roundDown()
+//            print("screen: \(screenLocation), tile:\(discreteTileLocation)")
+//        }
+    }
+    
+    override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?)
+    {
+        
+    }
+    
+    override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?)
+    {
+        
+    }
+    
+    func pan(delta:CGPoint)
+    {
+        mapView.pan(delta)
+    }
+    
+    func pinch(delta:CGFloat)
+    {
+        mapView.rescale(delta)
     }
 }
