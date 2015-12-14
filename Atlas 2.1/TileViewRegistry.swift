@@ -63,4 +63,70 @@ class TileViewRegistry
         
         return sprite
     }
+    
+    func spriteRegisteredAt(coord:DiscreteTileCoord) -> Bool
+    {
+        if let _ = cols[coord.x]
+        {
+            if let _ = cols[coord.x]![coord.y]
+            {
+                return true
+            }
+            else
+            {
+                return false
+            }
+        }
+        else
+        {
+            return false
+        }
+    }
+    
+    func allCoords() -> Set<DiscreteTileCoord>
+    {
+        var coords = Set<DiscreteTileCoord>()
+        
+        for (x, col) in cols
+        {
+            for (y, _) in col
+            {
+                let coord = DiscreteTileCoord(x:x, y:y)
+                coords.insert(coord)
+            }
+        }
+        
+        return coords
+    }
+    
+    func allSprites() -> Set<SKSpriteNode>
+    {
+        var sprites = Set<SKSpriteNode>()
+        
+        for (_, col) in cols
+        {
+            for (_, sprite) in col
+            {
+                sprites.insert(sprite)
+            }
+        }
+        
+        return sprites
+    }
+    
+    func allData() -> [DiscreteTileCoord:SKSpriteNode]
+    {
+        var data = [DiscreteTileCoord:SKSpriteNode]()
+        
+        for (x, col) in cols
+        {
+            for (y, sprite) in col
+            {
+                let coord = DiscreteTileCoord(x:x, y:y)
+                data[coord] = sprite
+            }
+        }
+        
+        return data
+    }
 }

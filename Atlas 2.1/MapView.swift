@@ -160,6 +160,7 @@ class MapView : SKNode, MapObserver
     func rescale(scaleDelta:CGFloat)
     {
         resizeTilesInView(scaleDelta)
+        
         let rectInfo = recalculateTileRect()
         if (rectInfo.updateNeeded)
         {
@@ -235,12 +236,33 @@ class MapView : SKNode, MapObserver
     func resizeTilesInView(scaleDelta:CGFloat)
     {
         let absoluteScaleDelta = 1.0 + scaleDelta
-        tileSize = CGSizeMake(tileSize.width*absoluteScaleDelta, tileSize.height*absoluteScaleDelta)
         
-        for (coord, tileSprite) in registeredTiles
+        var newTileSize = CGSizeMake(tileSize.width*absoluteScaleDelta, tileSize.height*absoluteScaleDelta)
+        
+        if (newTileSize.width > CGFloat(50.0) || newTileSize.height > CGFloat(50.0))
         {
-            tileSprite.resizeNode(tileSize.width, y:tileSize.height)
-            tileSprite.position = screenPosForTileViewAtCoord(coord, cameraInWorld:cameraInWorld, cameraOnScreen:cameraOnScreen, tileSize:tileSize)
+            // Enforce maximum zoom
+            newTileSize = CGSizeMake(CGFloat(50), CGFloat(50))
+        }
+        
+        if (newTileSize.width < CGFloat(20.0) || newTileSize.height < CGFloat(20.0))
+        {
+            // Enforce minimum zoom
+            newTileSize = CGSizeMake(CGFloat(20), CGFloat(20))
+        }
+        
+        let adjustment_x = abs(newTileSize.width - tileSize.width)
+        let adjustment_y = abs(newTileSize.height - tileSize.height)
+        
+        if (adjustment_x > 0.01 || adjustment_y > 0.01)
+        {
+            tileSize = newTileSize
+            
+            for (coord, tileSprite) in registeredTiles
+            {
+                tileSprite.resizeNode(tileSize.width, y:tileSize.height)
+                tileSprite.position = screenPosForTileViewAtCoord(coord, cameraInWorld:cameraInWorld, cameraOnScreen:cameraOnScreen, tileSize:tileSize)
+            }
         }
     }
     
@@ -249,22 +271,104 @@ class MapView : SKNode, MapObserver
     {
         if let _ = modelDelegate
         {
-            // Remove the out-of-bounds coords
-            for (coord, _) in registeredTiles
+//            // Remove the out-of-bounds coords
+//            for (coord, _) in registeredTiles
+//            {
+//                if (!tileViewRect!.contains(coord))
+//                {
+//                    removeTileViewAt(coord)
+//                }
+//            }
+            
+            if let oldRect = oldRect
             {
-                if (!tileViewRect!.contains(coord))
+                if let newRect = tileViewRect
                 {
-                    removeTileViewAt(coord)
+                    let oldLeft = oldRect.left
+                    let oldRight = oldRect.right
+                    let oldUp = oldRect.up
+                    let oldDown = oldRect.down
+                    
+                    let newLeft = newRect.left
+                    let newRight = newRect.right
+                    let newUp = newRect.up
+                    let newDown = newRect.down
+                    
+                    let leftDelta = newLeft - oldLeft
+                    let rightDelta = newRight - oldRight
+                    let upDelta = newUp - oldUp
+                    let downDelta = newDown - oldDown
+                    
+                    if (leftDelta > 0)
+                    {
+                        removeTilesInRect(oldLeft, right:newLeft-1, down:oldDown, up:oldUp)
+                    }
+                    else if (leftDelta < 0)
+                    {
+                        addMissingTilesInRect(newLeft, right:oldLeft-1, down:newDown, up:newUp)
+                    }
+                    
+                    if (rightDelta > 0)
+                    {
+                        addMissingTilesInRect(oldRight+1, right:newRight, down:newDown, up:newUp)
+                    }
+                    else if (rightDelta < 0)
+                    {
+                        removeTilesInRect(newRight+1, right:oldRight, down:oldDown, up:oldUp)
+                    }
+                    
+                    if (upDelta > 0)
+                    {
+                        addMissingTilesInRect(newLeft, right:newRight, down:oldUp+1, up:newUp)
+                    }
+                    else if (upDelta < 0)
+                    {
+                        removeTilesInRect(oldLeft, right:oldRight, down:newUp+1, up:oldUp)
+                    }
+                    
+                    if (downDelta > 0)
+                    {
+                        removeTilesInRect(oldLeft, right:oldRight, down:oldDown, up:newDown-1)
+                    }
+                    else if (downDelta < 0)
+                    {
+                        addMissingTilesInRect(newLeft, right:newRight, down:newDown, up:oldDown-1)
+                    }
                 }
             }
-            
-            // Add any new coords not already on the board
-            for x in tileViewRect!.left...tileViewRect!.right
+            else
             {
-                for y in tileViewRect!.down...tileViewRect!.up
+                // Add any new coords not already on the board
+                for x in tileViewRect!.left...tileViewRect!.right
                 {
-                    addMissingTiles(x, y:y)
+                    for y in tileViewRect!.down...tileViewRect!.up
+                    {
+                        addMissingTiles(x, y:y)
+                    }
                 }
+            }
+        }
+    }
+    
+    func removeTilesInRect(left:Int, right:Int, down:Int, up:Int)
+    {
+        for x in left...right
+        {
+            for y in down...up
+            {
+                let coord = DiscreteTileCoord(x:x, y:y)
+                removeTileViewAt(coord)
+            }
+        }
+    }
+    
+    func addMissingTilesInRect(left:Int, right:Int, down:Int, up:Int)
+    {
+        for x in left...right
+        {
+            for y in down...up
+            {
+                addMissingTiles(x, y:y)
             }
         }
     }

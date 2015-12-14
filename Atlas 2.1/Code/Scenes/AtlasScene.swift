@@ -9,17 +9,7 @@
 import UIKit
 import SpriteKit
 
-protocol PanHandler
-{
-    func pan(delta:CGPoint)
-}
-
-protocol PinchHandler
-{
-    func pinch(delta:CGFloat)
-}
-
-class AtlasScene:SKScene,PanHandler,PinchHandler
+class AtlasScene:SKScene,PanHandler,PinchHandler,GestureHandler
 {
     //////////////////////////////////////////////////////////////////////////////////////////
     // View
@@ -31,6 +21,11 @@ class AtlasScene:SKScene,PanHandler,PinchHandler
     
     var mapView:MapView
     var map:TileMap
+    
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // View
+    //////////////////////////////////////////////////////////////////////////////////////////
+    var gestureInProgress:Bool = false
 
     override init(size:CGSize)
     {
@@ -43,7 +38,7 @@ class AtlasScene:SKScene,PanHandler,PinchHandler
         tiles = SKTextureAtlas(named:"Tiles")
         
         let tileSize = CGSizeMake(20, 20)
-        let mapViewSize = CGSizeMake(250, 250)
+        let mapViewSize = CGSizeMake(500, 500)
         
         let mapBounds = TileRect(left:0, right:50, up:50, down:0)
         map = TileMap(bounds:mapBounds, random:true)
@@ -75,8 +70,6 @@ class AtlasScene:SKScene,PanHandler,PinchHandler
         let randomType = TileClasses.all.randomElement()
         
         map.setTileAt(randomCoord, type:randomType)
-        
-//        mapView.update()
     }
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?)
@@ -108,5 +101,15 @@ class AtlasScene:SKScene,PanHandler,PinchHandler
     func pinch(delta:CGFloat)
     {
         mapView.rescale(delta)
+    }
+    
+    func gestureBegan()
+    {
+        gestureInProgress = true
+    }
+    
+    func gestureEnded()
+    {
+        gestureInProgress = false
     }
 }

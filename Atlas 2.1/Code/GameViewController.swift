@@ -9,11 +9,26 @@
 import UIKit
 import SpriteKit
 
+protocol PanHandler
+{
+    func pan(delta:CGPoint)
+}
+
+protocol PinchHandler
+{
+    func pinch(delta:CGFloat)
+}
+
+protocol GestureHandler
+{
+    func gestureBegan()
+    func gestureEnded()
+}
+
 class GameViewController:UIViewController
 {
     var scene:AtlasScene?
     
-    // Control
     var panStart:CGPoint?
     var previousScale:CGFloat?
 
@@ -53,6 +68,7 @@ class GameViewController:UIViewController
         {
             case .Began:
                 panStart = spriteKitLocation
+                scene?.gestureBegan()
                 break
             case .Changed:
                 if (recognizer.numberOfTouches() == 2)
@@ -64,9 +80,11 @@ class GameViewController:UIViewController
                 break
             case .Ended:
                 panStart = nil
+                scene?.gestureEnded()
                 break
             default:
                 panStart = nil
+                scene?.gestureEnded()
                 break
         }
     }
@@ -77,6 +95,7 @@ class GameViewController:UIViewController
         {
             case .Began:
                 previousScale = recognizer.scale
+                scene?.gestureBegan()
                 break
             case .Changed:
                 if (recognizer.numberOfTouches() == 2)
@@ -88,9 +107,11 @@ class GameViewController:UIViewController
                 break
             case .Ended:
                 panStart = nil
+                scene?.gestureEnded()
                 break
             default:
                 panStart = nil
+                scene?.gestureEnded()
                 break
         }
     }
