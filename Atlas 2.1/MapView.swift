@@ -21,6 +21,7 @@ class MapView : SKNode, MapObserver
     var tileSize:CGSize
     var viewSize:CGSize
     var viewBoundSize:CGSize
+    var mapBounds:TileRect
     var mapState:MapState = MapState.UNLOADED
     
     var registeredTiles:[DiscreteTileCoord:SKSpriteNode]
@@ -47,6 +48,8 @@ class MapView : SKNode, MapObserver
         cameraOnScreen = CGPointZero
         
         registeredTiles = [DiscreteTileCoord:SKSpriteNode]()
+        
+        mapBounds = TileRect(left:0, right:0, up:0, down:0)
         
         super.init()
 
@@ -97,11 +100,11 @@ class MapView : SKNode, MapObserver
     
     func addTileViewAt(coord:DiscreteTileCoord, type:TileType)
     {
-        // Create a tile sprite for it
         if (type != .VOID)
         {
-            let tileTextureName = textureNameForTileType(type)
-            let tileSprite = SKSpriteNode(texture:tileTextures.textureNamed(tileTextureName))
+            let textureName = textureNameAtCoord(coord, type:type)
+            
+            let tileSprite = SKSpriteNode(texture:tileTextures.textureNamed(textureName))
             tileSprite.resizeNode(tileSize.width, y:tileSize.height)
             tileSprite.position = screenPosForTileViewAtCoord(coord, cameraInWorld:cameraInWorld, cameraOnScreen:cameraOnScreen, tileSize:tileSize)
             
@@ -112,12 +115,66 @@ class MapView : SKNode, MapObserver
         }
     }
     
+    func addBlankAt(coord:DiscreteTileCoord)
+    {
+        let tileSprite = SKSpriteNode(imageNamed:"square.png")
+        tileSprite.resizeNode(tileSize.width, y:tileSize.height)
+        tileSprite.position = screenPosForTileViewAtCoord(coord, cameraInWorld:cameraInWorld, cameraOnScreen:cameraOnScreen, tileSize:tileSize)
+        tileSprite.color = UIColor(red:0.0, green:0.0, blue:0.0, alpha:1.0)
+        tileSprite.colorBlendFactor = 1.0
+        
+        tileViewNode.addChild(tileSprite)
+        registeredTiles[coord] = tileSprite
+    }
+    
     func removeTileViewAt(coord:DiscreteTileCoord)
     {
         if let tileSprite = registeredTiles[coord]
         {
             tileSprite.removeFromParent()
             registeredTiles.removeValueForKey(coord)
+            
+            // Update the tile above (in case it needs a texture swap)
+            let tileAbove = DiscreteTileCoord(x:coord.x, y:coord.y+1)
+            refreshTextureAtCoord(tileAbove)
+        }
+    }
+    
+    func textureNameAtCoord(coord:DiscreteTileCoord, type:TileType) -> String
+    {
+        var textureName = textureNameForTileType(type)
+        let coordBelow = DiscreteTileCoord(x:coord.x, y:coord.y-1)
+        
+        if let coordBelowType = modelDelegate?.tileAt(coordBelow)
+        {
+            if (type == .WALL && coordBelowType != .WALL)
+            {
+                textureName += "a"
+            }
+        }
+        else
+        {
+            // No tile exists below
+            if (type == .WALL)
+            {
+                textureName += "a"
+            }
+        }
+        
+        return textureName
+    }
+    
+    // Assumes a NON-VOID tile at specified coord
+    func refreshTextureAtCoord(coord:DiscreteTileCoord)
+    {
+        if let type = modelDelegate?.tileAt(coord)
+        {
+            let textureName = textureNameAtCoord(coord, type:type)
+            
+            if let tileView = registeredTiles[coord]
+            {
+                tileView.texture = tileTextures.textureNamed(textureName)
+            }
         }
     }
     
@@ -129,12 +186,32 @@ class MapView : SKNode, MapObserver
     {
         if (tileViewRect!.contains(coord))
         {
-            // Delete that tile and re-draw it from scratch
-            removeTileViewAt(coord)
-            
             if let newType = modelDelegate?.tileAt(coord)
             {
-                addTileViewAt(coord, type:newType)
+                if (newType == .VOID)
+                {
+                    removeTileViewAt(coord)
+                }
+                else
+                {
+                    if let _ = registeredTiles[coord]
+                    {
+                        // Refresh texture
+                        refreshTextureAtCoord(coord)
+                        // Refresh the texture above
+                        refreshTextureAtCoord(DiscreteTileCoord(x:coord.x, y:coord.y+1))
+                    }
+                    else
+                    {
+                        addTileViewAt(coord, type:newType)
+                        // Refresh the texture above
+                        refreshTextureAtCoord(DiscreteTileCoord(x:coord.x, y:coord.y+1))
+                    }
+                }
+            }
+            else
+            {
+                removeTileViewAt(coord)
             }
         }
     }
@@ -177,7 +254,7 @@ class MapView : SKNode, MapObserver
     {
         if let _ = modelDelegate
         {
-            let mapBounds = modelDelegate!.getBounds()
+            mapBounds = modelDelegate!.getBounds()
             cameraInWorld = TileCoord(x:Double(mapBounds.left + mapBounds.right + 1)/2.0, y:Double(mapBounds.down + mapBounds.up + 1)/2.0)
             
             recalculateTileRect()
@@ -271,15 +348,6 @@ class MapView : SKNode, MapObserver
     {
         if let _ = modelDelegate
         {
-//            // Remove the out-of-bounds coords
-//            for (coord, _) in registeredTiles
-//            {
-//                if (!tileViewRect!.contains(coord))
-//                {
-//                    removeTileViewAt(coord)
-//                }
-//            }
-            
             if let oldRect = oldRect
             {
                 if let newRect = tileViewRect
@@ -387,6 +455,10 @@ class MapView : SKNode, MapObserver
             {
                 addTileViewAt(coord, type:tileType)
             }
+            else if !mapBounds.contains(coord)
+            {
+                addBlankAt(coord)
+            }
         }
     }
     
@@ -405,6 +477,21 @@ class MapView : SKNode, MapObserver
                     addTileViewAt(coord, type:tileType)
                 }
             }
+        }
+    }
+    
+    func tileAtLocation(location:CGPoint) -> DiscreteTileCoord?
+    {
+        let tileLocation = tileCoordForScreenPos(location, cameraInWorld:cameraInWorld, cameraOnScreen:cameraOnScreen, tileSize:tileSize)
+        let discreteTileLocation = tileLocation.roundDown()
+        
+        if (tileViewRect!.contains(discreteTileLocation))
+        {
+            return discreteTileLocation
+        }
+        else
+        {
+            return nil
         }
     }
     

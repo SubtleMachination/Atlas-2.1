@@ -62,6 +62,16 @@ struct TileRect
     {
         return (other.left == left && other.right == right && other.up == up && other.down == down)
     }
+    
+    func width() -> Int
+    {
+        return (right-left)+1
+    }
+    
+    func height() -> Int
+    {
+        return (up-down)+1
+    }
 }
 
 

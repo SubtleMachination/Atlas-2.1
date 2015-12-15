@@ -28,6 +28,7 @@ protocol MapObserver
 protocol ModelDelegate
 {
     func tileAt(coord:DiscreteTileCoord) -> TileType?
+    func setTileAt(coord:DiscreteTileCoord, type:TileType)
     func getBounds() -> TileRect
 }
 

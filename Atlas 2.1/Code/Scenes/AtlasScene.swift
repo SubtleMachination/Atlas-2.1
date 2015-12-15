@@ -20,10 +20,12 @@ class AtlasScene:SKScene,PanHandler,PinchHandler,GestureHandler
     var tiles:SKTextureAtlas
     
     var mapView:MapView
+    var editorPanel:EditorViewPanel
     var map:TileMap
+    var atlas:Atlas
     
     //////////////////////////////////////////////////////////////////////////////////////////
-    // View
+    // Control
     //////////////////////////////////////////////////////////////////////////////////////////
     var gestureInProgress:Bool = false
 
@@ -37,21 +39,30 @@ class AtlasScene:SKScene,PanHandler,PinchHandler,GestureHandler
         
         tiles = SKTextureAtlas(named:"Tiles")
         
-        let tileSize = CGSizeMake(20, 20)
-        let mapViewSize = CGSizeMake(500, 500)
+        let tileSize = CGSizeMake(35, 35)
+        let mapViewSize = CGSizeMake(700, 560)
         
-        let mapBounds = TileRect(left:0, right:50, up:50, down:0)
-        map = TileMap(bounds:mapBounds, random:true)
+        let mapBounds = TileRect(left:0, right:12, up:12, down:0)
+        map = TileMap(bounds:mapBounds, random:false)
         
         mapView = MapView(viewSize:mapViewSize, tileSize:tileSize)
         map.registerObserver(mapView)
-        mapView.position = center
+        mapView.position = CGPointMake(center.x, center.y + 50)
+        
+        editorPanel = EditorViewPanel(size:CGSizeMake(window.width, CGFloat(100)))
+        editorPanel.position = CGPointMake(center.x, 0)
+        
+        atlas = Atlas()
+        map.registerObserver(atlas)
+        
+        atlas.proceed()
         
         super.init(size:size)
         
         self.backgroundColor = UIColor(red:0.1, green:0.1, blue:0.1, alpha:1.0)
         
         self.addChild(mapView)
+        self.addChild(editorPanel)
     }
 
     required init?(coder aDecoder: NSCoder)
@@ -66,26 +77,65 @@ class AtlasScene:SKScene,PanHandler,PinchHandler,GestureHandler
     
     override func update(currentTime: CFTimeInterval)
     {
-        let randomCoord = map.randomCoord()
-        let randomType = TileClasses.all.randomElement()
-        
-        map.setTileAt(randomCoord, type:randomType)
+//        let randomCoord = map.randomCoord()
+//        let randomType = TileClasses.all.randomElement()
+//        
+//        map.setTileAt(randomCoord, type:randomType)
     }
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?)
     {
-//        if let firstTouch = touches.first
-//        {
-//            let screenLocation = firstTouch.locationInNode(mapView)
-//            let tileLocation = tileCoordForScreenPos(screenLocation, cameraInWorld:mapView.cameraInWorld, cameraOnScreen:mapView.cameraOnScreen, tileSize:mapView.tileSize)
-//            let discreteTileLocation = tileLocation.roundDown()
-//            print("screen: \(screenLocation), tile:\(discreteTileLocation)")
-//        }
+        if let firstTouch = touches.first
+        {
+            if (!gestureInProgress)
+            {
+                let _ = NSTimer.scheduledTimerWithTimeInterval(0.1, target:self, selector:Selector("executeTouchesBeganAfterDelay:"), userInfo:["touch":firstTouch], repeats:false)
+            }
+        }
+    }
+    
+    func executeTouchesBeganAfterDelay(timer:NSTimer)
+    {
+        if (!gestureInProgress)
+        {
+            let userInfo = timer.userInfo as! Dictionary<String, AnyObject>
+            let firstTouch = userInfo["touch"] as! UITouch
+            
+            // Check for selection changes
+            editorPanel.selectAt(firstTouch)
+            
+            // Alter touched tile
+            if let touchedTile = mapView.tileAtLocation(firstTouch.locationInNode(mapView))
+            {
+                map.setTileAt(touchedTile, type:editorPanel.selectedTileType)
+            }
+        }
     }
     
     override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?)
     {
-        
+        if let firstTouch = touches.first
+        {
+            if (!gestureInProgress)
+            {
+                let _ = NSTimer.scheduledTimerWithTimeInterval(0.1, target:self, selector:Selector("executeTouchesMovedAfterDelay:"), userInfo:["touch":firstTouch], repeats:false)
+            }
+        }
+    }
+    
+    func executeTouchesMovedAfterDelay(timer:NSTimer)
+    {
+        if (!gestureInProgress)
+        {
+            let userInfo = timer.userInfo as! Dictionary<String, AnyObject>
+            let firstTouch = userInfo["touch"] as! UITouch
+            
+            // Alter touched tile
+            if let touchedTile = mapView.tileAtLocation(firstTouch.locationInNode(mapView))
+            {
+                map.setTileAt(touchedTile, type:editorPanel.selectedTileType)
+            }
+        }
     }
     
     override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?)
